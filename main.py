@@ -1,5 +1,5 @@
 def main():
-    print("Hello from empirical-analysis-ml-classifiers!")
+    print("Running main")
 
 
 if __name__ == "__main__":
