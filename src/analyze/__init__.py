@@ -22,8 +22,8 @@ from analyze.utils.plots import (
 )
 from analyze.utils.read_file import read_file, sample_data, save_metrics_to_csv
 
-USE_SAMPLING = True
-SAMPLE_SIZE = 10000
+USE_SAMPLING = False
+SAMPLE_SIZE = 100000
 
 
 def preprocess_data(file_path, selected_features):
