@@ -20,7 +20,7 @@ from analyze.utils.plots import (
     plot_precision_recall_curve,
     plot_roc_curve,
 )
-from analyze.utils.read_file import read_file, sample_data
+from analyze.utils.read_file import read_file, sample_data, save_metrics_to_csv
 
 USE_SAMPLING = True
 SAMPLE_SIZE = 10000
@@ -57,18 +57,10 @@ def preprocess_data(file_path, selected_features):
 
 def evaluate_classifier(name, classifier, X_train, X_test, y_train, y_test):
     """
-    Train and evaluate a classifier with properly formatted output.
-    Args:
-        name (str): Name of the classifier.
-        classifier (object): Classifier instance.
-        X_train (pd.DataFrame): Training features.
-        X_test (pd.DataFrame): Testing features.
-        y_train (pd.Series): Training labels.
-        y_test (pd.Series): Testing labels.
+    Train and evaluate a classifier, print metrics to console and save them to a CSV file.
     """
-    print(f"\n{'=' * 40}")
-    print(f"{'Training and Evaluating Classifier:':<30} {name}")
-    print(f"{'=' * 40}")
+    metrics = {}
+    metrics["Classifier"] = name
 
     # Measure training time
     start_train = time.perf_counter()
@@ -87,7 +79,18 @@ def evaluate_classifier(name, classifier, X_train, X_test, y_train, y_test):
     cm = confusion_matrix(y_test, y_pred)
     false_alarm_rate = cm[0, 1] / (cm[0, 0] + cm[0, 1])
 
-    # Display results
+    # Store metrics in dictionary
+    metrics["Accuracy"] = accuracy
+    metrics["Precision"] = precision
+    metrics["Recall"] = recall
+    metrics["False Alarm Rate"] = false_alarm_rate
+    metrics["Training Time"] = end_train - start_train
+    metrics["Prediction Time"] = end_predict - start_predict
+
+    # Print the results to the console
+    print(f"\n{'=' * 40}")
+    print(f"{'Training and Evaluating Classifier:':<30} {name}")
+    print(f"{'=' * 40}")
     print(f"{'Metric':<25}{'Value':>15}")
     print(f"{'-' * 40}")
     print(f"{'Accuracy:':<25}{accuracy:.4f}")
@@ -108,6 +111,9 @@ def evaluate_classifier(name, classifier, X_train, X_test, y_train, y_test):
     print(f"{'Training Time:':<25}{end_train - start_train:.4f}")
     print(f"{'Prediction Time:':<25}{end_predict - start_predict:.4f}")
     print(f"{'=' * 40}\n")
+
+    # Save metrics to CSV file
+    save_metrics_to_csv(metrics)
 
     # Plot evaluation metrics and results
     plot_confusion_matrix(y_test, y_pred, file_name=f"confusion_matrix_{name}.png")

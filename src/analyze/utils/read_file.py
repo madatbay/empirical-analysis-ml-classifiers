@@ -1,6 +1,10 @@
+import csv
 import os
 
 import pandas as pd
+
+# Get the absolute path of the CSV file
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
 
 def read_file(file_path: str, selected_features: list[str]) -> pd.DataFrame | pd.Series:
@@ -15,10 +19,7 @@ def read_file(file_path: str, selected_features: list[str]) -> pd.DataFrame | pd
     Returns:
         pd.DataFrame - The cleaned DataFrame with selected features.
     """
-    # Get the absolute path of the CSV file
-    project_root = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "..")
-    )  # Go to the project root directory
+    # Go to the project root directory
     full_file_path = os.path.join(
         project_root, file_path
     )  # Combine with the relative file path
@@ -50,3 +51,35 @@ def sample_data(
         Sampled DataFrame.
     """
     return df.sample(n=sample_size, random_state=random_state)
+
+
+# Function to save metrics in a CSV file
+def save_metrics_to_csv(metrics, filename="metrics.csv"):
+    fieldnames = [
+        "Classifier",
+        "Accuracy",
+        "Precision",
+        "Recall",
+        "False Alarm Rate",
+        "Training Time",
+        "Prediction Time",
+    ]
+
+    full_file_path = os.path.join(project_root, "data", filename)
+    # Check if the file exists, if not create it and write header
+    file_exists = False
+    try:
+        with open(full_file_path, "r") as file:
+            file_exists = True
+    except FileNotFoundError:
+        pass
+
+    with open(full_file_path, mode="a", newline="") as file:
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
+
+        # If file doesn't exist, write header
+        if not file_exists:
+            writer.writeheader()
+
+        # Write the metric data to the CSV file
+        writer.writerow(metrics)

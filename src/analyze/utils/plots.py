@@ -17,7 +17,7 @@ def plot_class_distribution(y, file_name="class_distribution.png"):
         file_name (str): Name of the output file.
     """
     plt.figure(figsize=(6, 4))
-    sns.countplot(x=y, palette="viridis")
+    sns.countplot(x=y, hue=y, palette="viridis")
     plt.title("Class Distribution")
     plt.xlabel("Classes")
     plt.ylabel("Count")
